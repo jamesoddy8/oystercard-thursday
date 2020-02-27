@@ -7,7 +7,7 @@ describe OysterCard do
   end
 
   it "initializes with empty list of journeys" do
-    expect(subject.journeys).to be_empty
+    expect(subject.journey.journeys).to be_empty
   end
 
   describe "#top_up" do
@@ -64,11 +64,20 @@ describe OysterCard do
       subject.touch_in(station)
 
     end
+    it "will tell me I am in journey if I touch in" do
+      subject.top_up(10)
+      subject.touch_in(station)
+      expect(subject.in_journey?).to eq true
+    end
+
+    it "will tell me I am not in journey if I don't touch in" do
+      expect(subject.in_journey?).to eq false
+    end
 
     it "remembers touch_in station " do
       subject.top_up(10)
       subject.touch_in(station)
-      expect(subject.entry_station).to eq(station)
+      expect(subject.journey.entry_station).to eq(station)
 
     end
 
@@ -93,13 +102,17 @@ describe OysterCard do
 
     it "stores exit station" do
       subject.touch_out(exit_station)
-      expect(subject.exit_station).to eq exit_station
+      expect(subject.journey.exit_station).to eq exit_station
     end
 
     it "creates a journey from entry_station to exit_station and stores it as hash" do
       subject.touch_out(exit_station)
-      expect(subject.journeys).to include { {entry_station => exit_station} }# , exit_station => exit_station}]
+      expect(subject.journey.journeys).to include { {entry_station => exit_station} }# , exit_station => exit_station}]
     end
-
+    it "will charge me penalty fare if I don't touch in" do
+      # subject.touch_out(exit_station)
+      expect{subject.touch_out(exit_station)}.to change { subject.balance }.by (-OysterCard::PENALTY_FARE)
+    end
   end
+
 end
