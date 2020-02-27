@@ -1,6 +1,8 @@
 require "oystercard"
 
 describe OysterCard do
+  let(:entry_station){ double(:entry_station)}
+    let(:exit_station){ double(:exit_station)}
 
   it "initializes with default balance of 0" do
     expect(subject.balance).to eq 0
@@ -109,10 +111,15 @@ describe OysterCard do
       subject.touch_out(exit_station)
       expect(subject.journey.journeys).to include { {entry_station => exit_station} }# , exit_station => exit_station}]
     end
-    it "will charge me penalty fare if I don't touch in" do
-      # subject.touch_out(exit_station)
-      expect{subject.touch_out(exit_station)}.to change { subject.balance }.by (-OysterCard::PENALTY_FARE)
-    end
+    
+  end
+  it "will charge me penalty fare if I don't touch in" do
+    expect{subject.touch_out(exit_station)}.to change { subject.balance }.by (-OysterCard::PENALTY_FARE)
+  end
+  it 'will charge me penalty fare if I dont touch out, and try and start another journey' do
+    subject.top_up(40)
+    subject.touch_in(entry_station)
+    expect{subject.touch_in(entry_station)}.to change { subject.balance }.by (-OysterCard::PENALTY_FARE)
   end
 
 end
