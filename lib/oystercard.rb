@@ -4,8 +4,6 @@ class OysterCard
 
   MAXIMUM_BALANCE = 90
   MINIMUM_BALANCE = 1
-  MINIMUM_FARE = 1.5
-  PENALTY_FARE = 6
 
   def initialize
     @balance = 0
@@ -17,22 +15,15 @@ class OysterCard
     @balance += value
   end
 
-
   def touch_in(station)
-    raise "Not enough balance" if @balance < MINIMUM_FARE
-    user_didnt_tap_out = journey.start_journey(station)
-    if user_didnt_tap_out == true
-      deduct(PENALTY_FARE)
-    end
+    raise "Not enough balance" if @balance < Journey::MINIMUM_FARE
+    journey.start_journey(station)
+    deduct(@journey.fare)
   end
 
   def touch_out(station)
-    correct_fare = journey.finish_journey(station)
-    if correct_fare == true
-      deduct(MINIMUM_FARE) 
-    else
-      deduct(PENALTY_FARE)
-    end
+    journey.finish_journey(station)
+    deduct(@journey.fare)
   end
 
   def in_journey?
@@ -45,5 +36,5 @@ class OysterCard
   def deduct(amount)
     @balance -= amount
   end
-
+  
 end

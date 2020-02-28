@@ -84,7 +84,7 @@ describe OysterCard do
     end
 
     it "raises an error if card balance is less than minimum balance" do
-      expect { (subject.touch_in) }.not_to raise_error("Not enough balance") if subject.balance > OysterCard::MINIMUM_FARE
+      expect { (subject.touch_in) }.not_to raise_error("Not enough balance") if subject.balance > Journey::MINIMUM_FARE
     end
   end
 
@@ -99,7 +99,7 @@ describe OysterCard do
     let(:exit_station){ double(:exit_station)}
 
     it "can touch out" do
-      expect { subject.touch_out(exit_station) }.to change { subject.balance }.by (-OysterCard::MINIMUM_FARE)
+      expect { subject.touch_out(exit_station) }.to change { subject.balance }.by (-Journey::MINIMUM_FARE)
     end
 
     it "stores exit station" do
@@ -111,15 +111,15 @@ describe OysterCard do
       subject.touch_out(exit_station)
       expect(subject.journey.journeys).to include { {entry_station => exit_station} }# , exit_station => exit_station}]
     end
-    
+
   end
   it "will charge me penalty fare if I don't touch in" do
-    expect{subject.touch_out(exit_station)}.to change { subject.balance }.by (-OysterCard::PENALTY_FARE)
+    expect{subject.touch_out(exit_station)}.to change { subject.balance }.by (-Journey::PENALTY_FARE)
   end
   it 'will charge me penalty fare if I dont touch out, and try and start another journey' do
     subject.top_up(40)
     subject.touch_in(entry_station)
-    expect{subject.touch_in(entry_station)}.to change { subject.balance }.by (-OysterCard::PENALTY_FARE)
+    expect{subject.touch_in(entry_station)}.to change { subject.balance }.by (-Journey::PENALTY_FARE)
   end
 
 end
